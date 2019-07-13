@@ -18,45 +18,52 @@ obstacle_y = -1
 openingSize = 150
 score = -1
 
-#Returns a list of the 5 highest scores from the text file
-def getHighScores():
+#Returns a list of the top 5 from the high scores text file. Enter parameter 'p' for the players, 's' for the scores
+def getTop5(choice):
     scores = open("HighScores.txt", 'r')
-    highScores = []
+    tempScores = []
+    tempPlayers = []
     lines = scores.readlines()
     for line in lines:
-        for section in line.split():
-            if section.isdigit():
-                highScores.append(int(section))
-    return highScores
+        sections = line.split()
+        tempPlayers.append(sections[1])
+        tempScores.append(sections[3])       
+    scores.close()
+    if choice == 'p':
+        return tempPlayers
+    else:
+        return tempScores
 
-##Need to initiliaze these things using the text file in order to keep scores through multiple plays
-highScores = getHighScores()
-highScorePlayers = [' ', ' ', ' ', ' ', ' ']
+#Initialize scores and players by retreiving info from text file using above methods
+highScores = getTop5('s')
+highScorePlayers = getTop5('p')
 
 #Rewrite the high scores text file, updating new scores/players
-def rewriteHighScores(scores, players):
+def rewriteHighScores(scoreList, playerList):
     file = open("HighScores.txt", 'w')
     for i in range(1, 6):
-        file.write(str(i) + '. ' + str(players[i-1]) + " - " + str(scores[i-1]) + '\n')
-
+        file.write(str(i) + '. ' + str(playerList[i-1]) + " - " + str(scoreList[i-1]) + '\n')
 
 
 #Given a current score, updates the list of high scores if the score belongs there
 #Returns the index of the new score so we can add the new name, -1 otherwise
-def updateHighScore(curScore, scores):
+def updateHS(curScore, scores):
     for i in range(0, 5):
-        if curScore > scores[i]:
+        if curScore > int(scores[i]):
             for j in range(4, i, -1):
                 scores[j] = scores[j-1]
             scores[i] = curScore
             return i
     return -1
 
+#Shifts entries back to update players on high scoreboard
+def updateHSPlayers(playerIndex, playersList, playerName):
+    for i in range(4, playerIndex, -1):
+        playersList[i] = playersList[i-1]
+    playersList[playerIndex] = playerName
 
 play = True
-
 while play:
-    #pygame.time.delay(100)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -96,11 +103,11 @@ while play:
         file1 = open("HighScores.txt","r")
         
         print("High Scores:")
-        nameInd = updateHighScore(score, highScores)
+        nameInd = updateHS(score, highScores)
         if nameInd != -1:
             print('You got a high score! Please enter you name below:\n')
             playerName = input('Name: ')
-            highScorePlayers[nameInd] = playerName
+            updateHSPlayers(nameInd, highScorePlayers, playerName)
         rewriteHighScores(highScores, highScorePlayers)
         print(file1.read())
 
