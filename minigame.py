@@ -8,7 +8,6 @@ window_width = 500
 window = pygame.display.set_mode((window_width, window_length))
 
 pygame.display.set_caption("QuickTravel Minigame")
-time.sleep(5)
 
 width = 50
 height = 50
@@ -43,13 +42,16 @@ def rewriteHighScores(scores, players):
 
 
 #Given a current score, updates the list of high scores if the score belongs there
+#Returns the index of the new score so we can add the new name, -1 otherwise
 def updateHighScore(curScore, scores):
     for i in range(0, 5):
         if curScore > scores[i]:
             for j in range(4, i, -1):
                 scores[j] = scores[j-1]
             scores[i] = curScore
-            break
+            return i
+    return -1
+
 
 play = True
 
@@ -94,13 +96,12 @@ while play:
         file1 = open("HighScores.txt","r")
         
         print("High Scores:")
-        updateHighScore(score, highScores)
+        nameInd = updateHighScore(score, highScores)
+        if nameInd != -1:
+            print('You got a high score! Please enter you name below:\n')
+            playerName = input('Name: ')
+            highScorePlayers[nameInd] = playerName
         rewriteHighScores(highScores, highScorePlayers)
         print(file1.read())
-
-
-
-
-
 
 pygame.quit()
