@@ -110,29 +110,37 @@ def game_intro():
                 keepGoing = False
                 pygame.quit()
                 quit()
+    
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if easyButton.hovering():
+                return 'Easy'
+            if medButton.hovering():
+                return 'Medium'
+            if hardButton.hovering():
+                return 'Hard'
+            if customButton.hovering():
+                return 'Custom'
 
 
 def playGame(difficulty):
     
-    #Initalizing some variables
+    #Height and width of player block
     width = 50
     height = 50
 
+    #Initial position of player block
     x_pos = 230
     y_pos = 420
-    move = 10
 
+    #Initalize obstacle position and player score
     obstacle_y = -1
-    obstacle_speed = 15 #Hard-15, Med-12, Easy-9
-    openingSize = 150
-
     score = -1
-    
-    ##TODO Initialize these things above below, where they belong, do this after 'Custom' option is implemented
 
+    #Initialize movement speed and opening sizes depending on selected difficulty
     if difficulty == 'Easy':
         obstacle_speed = 9
         openingSize = 150
+        move = 10
     elif difficulty == 'Medium':
         obstacle_speed = 12
         openingSize = 140
@@ -142,18 +150,18 @@ def playGame(difficulty):
         openingSize = 130
         move = 15
     else:
-        #Difficulty is custom, for now, keep defaults
-        obstacle_speed = 15
+        #Difficulty is custom, look for user input
+        obstacle_speed = int(input('Please enter the desired speed of your block below: \n'))
+        openingSize = int(input('Please enter the desired size of openings below: \n'))
+        move = int(input('Please enter your desired lateral move speed below: \n'))
 
     play = True
     while play:
-
         #Provides option to quit using red X in corner
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 play = False
     
-
         #Key controls
         key = pygame.key.get_pressed()
         if key[pygame.K_LEFT]:
@@ -197,10 +205,11 @@ def playGame(difficulty):
                 playerName = input('Name: ')
                 updateHSPlayers(nameInd, highScorePlayers, playerName)
             rewriteHighScores(highScores, highScorePlayers)
-            print('Updated Leaberboard:\n')
+            print('Updated Leaderboard:\n')
             print(file1.read())
 
-game_intro()
-playGame('Hard')
+#game_intro() will allow user to select difficulty, then return that to playGame and start
+Difficulty = game_intro()
+playGame(Difficulty)
 
 pygame.quit()
