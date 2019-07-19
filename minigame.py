@@ -4,22 +4,36 @@ import random
 
 pygame.init()
 
-pygame.display.set_caption("QuickTravel Minigame")
+pygame.display.set_caption("QuickTravel")
 
 #Initalizing board and block variables
 window_length = 500
 window_width = 500
 window = pygame.display.set_mode((window_width, window_length))
 
+#Initalizing button colors
+GREEN = (0, 200, 0)
+LIGHT_GREEN = (0, 255 ,0)
+RED = (200, 0, 0)
+LIGHT_RED = (255, 0, 0)
+YELLOW = (200, 200, 0)
+LIGHT_YELLOW = (255, 255, 0)
+GRAY = (192, 192, 192)
+WHITE = (255, 255, 255)
+
+#Button class
 class button():
-    def __init__(self, color, x_pos, y_pos, width, height, txt):
+    #Constructor
+    def __init__(self, color, light_color, x_pos, y_pos, width, height, txt):
         self.color = color
+        self.light_color = light_color
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.width = width
         self.height = height
         self.txt = txt
     
+    #Called to see if the mouse is currently hovering over the button
     def hovering(self):
         mouse = pygame.mouse.get_pos()
         #If mouse is on button...
@@ -28,10 +42,10 @@ class button():
         else:
             return False
 
+    #Draws the button on the screen, draws in a different shade if the mouse is hovering on it to simulate interactiveness
     def draw(self, window):
-        #Draws rectangle based on position of mouse
         if self.hovering():
-            pygame.draw.rect(window, (255, 255, 255), (self.x_pos, self.y_pos, self.width, self.height))
+            pygame.draw.rect(window, self.light_color, (self.x_pos, self.y_pos, self.width, self.height))
         else:
             pygame.draw.rect(window, self.color, (self.x_pos, self.y_pos, self.width, self.height))
 
@@ -43,7 +57,9 @@ class button():
         x_center = self.x_pos + ((self.width/2) - (txt.get_width()/2))
         y_center = self.y_pos + ((self.height/2) - (txt.get_height()/2))
 
+        #Write text onto window
         window.blit(txt, (x_center, y_center))
+
 
 #Returns a list of the top 5 from the high scores text file. Enter parameter 'p' for the players, 's' for the scores
 def getTop5(choice):
@@ -90,15 +106,22 @@ def updateHSPlayers(playerIndex, playersList, playerName):
     playersList[playerIndex] = playerName
 
 def game_intro():
-    easyButton = button((0, 255, 0), 200, 100, 100, 50, 'Easy')
-    medButton = button((255, 255, 0), 200, 200, 100, 50, 'Medium')
-    hardButton = button((255, 0, 0), 200, 300, 100, 50, 'Hard')
-    customButton = button((192, 192, 192), 200, 400, 100, 50, 'Custom')
+    easyButton = button(GREEN, LIGHT_GREEN, 200, 100, 100, 50, 'Easy')
+    medButton = button(YELLOW, LIGHT_YELLOW, 200, 200, 100, 50, 'Medium')
+    hardButton = button(RED, LIGHT_RED, 200, 300, 100, 50, 'Hard')
+    customButton = button(GRAY, WHITE, 200, 400, 100, 50, 'Custom')
 
     keepGoing = True
 
     while keepGoing:
         window.fill((0, 0, 0))
+
+        #Drawing Title
+        title_font = pygame.font.SysFont('TT Supermolot Neue', 70)
+        title = title_font.render('QuickTravel', 1, (0, 255, 0))
+        window.blit(title, (115, 25))
+       
+        #Drawing Buttons
         easyButton.draw(window)
         medButton.draw(window)
         hardButton.draw(window)
@@ -123,7 +146,6 @@ def game_intro():
 
 
 def playGame(difficulty):
-    
     #Height and width of player block
     width = 50
     height = 50
